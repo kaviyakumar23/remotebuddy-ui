@@ -14,6 +14,10 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as constants_countries from "../constants/countries.js";
+import type * as constants_timezones from "../constants/timezones.js";
+import type * as mutations_populateData from "../mutations/populateData.js";
+import type * as queries_registrationDropdown from "../queries/registrationDropdown.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -23,7 +27,12 @@ import type {
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  "constants/countries": typeof constants_countries;
+  "constants/timezones": typeof constants_timezones;
+  "mutations/populateData": typeof mutations_populateData;
+  "queries/registrationDropdown": typeof queries_registrationDropdown;
+}>;
 export declare const api: FilterApi<
   typeof fullApi,
   FunctionReference<any, "public">
