@@ -5,6 +5,14 @@ import { Text } from "@/components/text";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Formik, Form, Field, ErrorMessage, FieldArray, FormikHelpers, FormikErrors, FormikState, FormikTouched, FormikProps } from "formik";
+import validationSchema, { FormValues, initialValues } from "./formschema";
+import BasicsForm from "./basics-form";
+import WorkInfoForm from "./work-form";
+import RemoteInfoForm from "./remote-form";
+import SkillsForm from "./skills-form";
+import MeetingPreferencesForm from "./meeting-form";
+import BioForm from "./bio-form";
 
 const steps = [
   { title: "Basics", description: "We promise not to spam you or sell your info to aliens." },
@@ -15,14 +23,7 @@ const steps = [
   { title: "Bio", description: "Give us your elevator pitch! Or your Netflix bio, whichever's cooler." },
 ];
 
-const BasicsForm = () => <div>Basics Form</div>;
-const WorkInfoForm = () => <div>Work Info Form</div>;
-const RemoteLifeForm = () => <div>Remote Life Form</div>;
-const SkillsInterestsForm = () => <div>Skills & Interests Form</div>;
-const MeetingPreferencesForm = () => <div>Meeting Preferences Form</div>;
-const BioForm = () => <div>Bio Form</div>;
-
-const stepComponents = [BasicsForm, WorkInfoForm, RemoteLifeForm, SkillsInterestsForm, MeetingPreferencesForm, BioForm];
+const stepComponents = [BasicsForm, WorkInfoForm, RemoteInfoForm, SkillsForm, MeetingPreferencesForm, BioForm];
 
 export default function FormLayout() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -53,15 +54,32 @@ export default function FormLayout() {
           <h2 className="text-2xl font-bold">{steps[currentStep].title}</h2>
           <p className="text-gray-600">{steps[currentStep].description}</p>
         </div>
-        <CurrentStepComponent />
-        <div className="flex justify-between">
-          <Button onClick={prevStep} disabled={currentStep === 0}>
-            Previous
-          </Button>
-          <Button onClick={nextStep} disabled={currentStep === steps.length - 1}>
-            {currentStep === steps.length - 1 ? "Finish" : "Next"}
-          </Button>
-        </div>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            setTimeout(() => {
+              alert(JSON.stringify(values, null, 2));
+              setSubmitting(false);
+            }, 400);
+          }}
+        >
+          {(formikProps: FormikProps<FormValues>) => {
+            return (
+              <Form className="space-y-6">
+                <CurrentStepComponent {...formikProps} />
+                <div className="flex justify-between">
+                  <Button onClick={prevStep} disabled={currentStep === 0}>
+                    Previous
+                  </Button>
+                  <Button onClick={nextStep} disabled={currentStep === steps.length - 1}>
+                    {currentStep === steps.length - 1 ? "Finish" : "Next"}
+                  </Button>
+                </div>
+              </Form>
+            );
+          }}
+        </Formik>
       </div>
     </div>
   );
