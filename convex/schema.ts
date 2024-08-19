@@ -13,7 +13,7 @@ export default defineSchema({
     yearsOfExperience: v.number(),
     remoteWorkStatus: v.string(),
     remoteWorkExperience: v.number(),
-    timeZone: v.string(),
+    timezone: v.string(),
     country: v.string(),
     city: v.optional(v.string()),
     linkedInUrl: v.optional(v.string()),
@@ -54,7 +54,14 @@ export default defineSchema({
     meetingFrequency: v.string(),
     workEnvironment: v.string(),
   }).index("by_userId", ["userId"]),
-
+  countries: defineTable({
+    name: v.string(),
+    code: v.string(),
+  }).index("by_code", ["code"]),
+  timezones: defineTable({
+    name: v.string(),
+    offset: v.string(),
+  }).index("by_offset", ["offset"]),
   skills: defineTable({
     name: v.string(),
     category: v.string(),

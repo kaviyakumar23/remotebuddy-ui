@@ -1,3 +1,4 @@
+"use client";
 import RegistrationHeader from "./header";
 import FormLayout from "./form-layout";
 

@@ -40,6 +40,19 @@ export default function FormLayout() {
     }
   };
 
+  const handleSubmit = async (values: FormValues, actions: any) => {
+    if (currentStep === steps.length) {
+      // Submit the form
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      alert(JSON.stringify(values, null, 2));
+      actions.setSubmitting(false);
+    } else {
+      actions.setTouched({});
+      actions.setSubmitting(false);
+      setCurrentStep((current) => current + 1);
+    }
+  };
+
   const CurrentStepComponent = stepComponents[currentStep];
   return (
     <div className="h-full flex flex-col items-center justify-start gap-4 pt-10">
@@ -54,16 +67,7 @@ export default function FormLayout() {
           <h2 className="text-2xl font-bold">{steps[currentStep].title}</h2>
           <p className="text-gray-600">{steps[currentStep].description}</p>
         </div>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(values, { setSubmitting }) => {
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              setSubmitting(false);
-            }, 400);
-          }}
-        >
+        <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
           {(formikProps: FormikProps<FormValues>) => {
             return (
               <Form className="space-y-6">
@@ -72,7 +76,7 @@ export default function FormLayout() {
                   <Button onClick={prevStep} disabled={currentStep === 0}>
                     Previous
                   </Button>
-                  <Button onClick={nextStep} disabled={currentStep === steps.length - 1}>
+                  <Button onClick={nextStep} disabled={formikProps.isSubmitting}>
                     {currentStep === steps.length - 1 ? "Finish" : "Next"}
                   </Button>
                 </div>

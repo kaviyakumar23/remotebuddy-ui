@@ -45,7 +45,7 @@ const validationSchema = Yup.object({
   city: Yup.string().max(50, "City name must be less than 50 characters"),
 
   // 12. Time zone
-  timeZone: Yup.string().required("Time zone is required"),
+  timezone: Yup.string().required("Time zone is required"),
 
   // 13. LinkedIn verification
   linkedInVerified: Yup.boolean().default(false),
@@ -95,7 +95,7 @@ export interface FormValues {
   jobTitle: string;
   country: string;
   city: string;
-  timeZone: string;
+  timezone: string;
   linkedInVerified: boolean;
   skills: string[];
   interests: string[];
@@ -116,7 +116,7 @@ export const initialValues: FormValues = {
   jobTitle: "",
   country: "",
   city: "",
-  timeZone: "",
+  timezone: "",
   linkedInVerified: false,
   skills: [""],
   interests: [""],
