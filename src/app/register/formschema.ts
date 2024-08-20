@@ -125,5 +125,5 @@ export const initialValues: FormValues = {
   interests: [""],
   preferredMeetingFrequency: "",
   preferredWorkingEnvironment: [],
-  meetingPreferences: [],
+  meetingPreferences: {},
 };

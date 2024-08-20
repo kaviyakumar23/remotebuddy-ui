@@ -6,7 +6,7 @@ import { FormValues } from "./formschema";
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const hourIntervals = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, "0")}:00`);
 
-interface MeetingPreference {
+export interface MeetingPreference {
   [day: string]: {
     [hour: string]: boolean;
   };
