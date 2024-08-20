@@ -19,7 +19,10 @@ const steps = [
   { title: "Work Info", description: "Tell us a bit about your 9-to-5 (or 10-to-6, or whatever floats your boat)." },
   { title: "Remote Life", description: "Are you a work-from-home wizard or just dipping your toes in the remote waters?" },
   { title: "Skills & Interests", description: "What are you awesome at? What makes you tick?" },
-  { title: "Meeting Preferences", description: "Let's sync up on how you like to connect with fellow remote warriors." },
+  {
+    title: "Meeting Preferences",
+    description: "Let's sync up on how you like to connect with fellow remote warriors. Don't worry, you can update this later.",
+  },
   { title: "Bio", description: "Give us your elevator pitch! Or your Netflix bio, whichever's cooler." },
 ];
 

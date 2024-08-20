@@ -104,7 +104,7 @@ export interface FormValues {
   interests: string[];
   preferredMeetingFrequency: string;
   preferredWorkingEnvironment: string[];
-  meetingPreferences: MeetingPreference[];
+  meetingPreferences: MeetingPreference;
 }
 
 export const initialValues: FormValues = {

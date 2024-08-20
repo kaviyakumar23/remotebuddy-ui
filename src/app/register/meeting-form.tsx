@@ -1,101 +1,55 @@
-"use client";
-
-import { Label } from "@/components/ui/label";
-import { FormikProps } from "formik";
+import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormikProps } from "formik";
 import { FormValues } from "./formschema";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-type DayOfWeek = (typeof daysOfWeek)[number];
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 0; hour < 24; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-      slots.push(time);
-    }
-  }
-  return slots;
-};
+const hourIntervals = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, "0")}:00`);
 
-const timeSlots = generateTimeSlots();
-
-export interface MeetingPreference {
-  day: DayOfWeek;
-  startTime: string;
-  endTime: string;
-}
-
-interface MeetingPreferencesProps {
-  preferences: MeetingPreference[];
-  setPreferences: React.Dispatch<React.SetStateAction<MeetingPreference[]>>;
-}
-export default function MeetingPreferencesForm(props: FormikProps<FormValues>) {
-  const { values, setFieldValue } = props;
-  const preferences = values.meetingPreferences;
-
-  const setPreferences = (newPreferences: MeetingPreference[]) => setFieldValue("meetingPreferences", newPreferences);
-  const handleDayChange = (day: DayOfWeek, isChecked: boolean) => {
-    if (isChecked) {
-      setPreferences([...preferences, { day, startTime: "09:00", endTime: "17:00" }]);
-    } else {
-      setPreferences(preferences.filter((pref) => pref.day !== day));
-    }
+interface MeetingPreference {
+  [day: string]: {
+    [hour: string]: boolean;
   };
+}
 
-  const handleTimeChange = (day: string, type: "startTime" | "endTime", value: string) => {
-    setPreferences(preferences.map((pref) => (pref.day === day ? { ...pref, [type]: value } : pref)));
+export default function MeetingPreferencesForm({ values, setFieldValue }: FormikProps<FormValues>) {
+  const availability: MeetingPreference = values.meetingPreferences || {};
+
+  const toggleAvailability = (day: string, hour: string) => {
+    const newAvailability = { ...availability };
+    if (!newAvailability[day]) {
+      newAvailability[day] = {};
+    }
+    newAvailability[day][hour] = !newAvailability[day][hour];
+    setFieldValue("availability", newAvailability);
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Meeting Preferences</h3>
-      {daysOfWeek.map((day) => (
-        <div key={day} className="flex items-center space-x-4">
-          <Checkbox
-            id={day}
-            checked={preferences.some((pref) => pref.day === day)}
-            onCheckedChange={(checked) => handleDayChange(day, checked as boolean)}
-          />
-          <Label htmlFor={day}>{day}</Label>
-          {preferences.some((pref) => pref.day === day) && (
-            <>
-              <Select
-                value={preferences.find((pref) => pref.day === day)?.startTime}
-                onValueChange={(value) => handleTimeChange(day, "startTime", value)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Start Time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span>to</span>
-              <Select
-                value={preferences.find((pref) => pref.day === day)?.endTime}
-                onValueChange={(value) => handleTimeChange(day, "endTime", value)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="End Time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </>
-          )}
-        </div>
-      ))}
+    <div className="overflow-x-auto">
+      <table className="min-w-full border-collapse">
+        <thead>
+          <tr>
+            <th className="p-2 border">Time</th>
+            {daysOfWeek.map((day) => (
+              <th key={day} className="p-2 border">
+                {day}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {hourIntervals.map((hour) => (
+            <tr key={hour}>
+              <td className="p-2 border">{hour}</td>
+              {daysOfWeek.map((day) => (
+                <td key={`${day}-${hour}`} className="p-2 border text-center">
+                  <Checkbox checked={availability[day]?.[hour] || false} onCheckedChange={() => toggleAvailability(day, hour)} />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
