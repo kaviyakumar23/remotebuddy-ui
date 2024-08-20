@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { MeetingPreference } from "./meeting-form";
 
 const validationSchema = Yup.object({
   // 1. Full name
@@ -56,6 +57,8 @@ const validationSchema = Yup.object({
   // 16. Interests or hobbies
   interests: Yup.array().of(Yup.string()).min(1, "At least one interest is required").required("Interests are required"),
 
+  hobbies: Yup.array().of(Yup.string()).min(1, "At least one hobby is required").required("Hobbies are required"),
+
   // 17. Preferred meeting frequency
   preferredMeetingFrequency: Yup.string()
     .oneOf(["weekly", "biweekly", "monthly"], "Invalid meeting frequency")
@@ -68,7 +71,7 @@ const validationSchema = Yup.object({
     .required("Preferred working environment is required"),
 
   // 19. Weekly meeting timings
-  weeklyMeetingTimings: Yup.array()
+  meetingPreferences: Yup.array()
     .of(
       Yup.object({
         day: Yup.string().oneOf(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]).required(),
@@ -101,7 +104,7 @@ export interface FormValues {
   interests: string[];
   preferredMeetingFrequency: string;
   preferredWorkingEnvironment: string[];
-  weeklyMeetingTimings: string[];
+  meetingPreferences: MeetingPreference[];
 }
 
 export const initialValues: FormValues = {
@@ -122,5 +125,5 @@ export const initialValues: FormValues = {
   interests: [""],
   preferredMeetingFrequency: "",
   preferredWorkingEnvironment: [],
-  weeklyMeetingTimings: [],
+  meetingPreferences: [],
 };

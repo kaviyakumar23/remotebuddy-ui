@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ErrorMessage, FormikProps } from "formik";
 import { FormValues } from "./formschema";
+import { industries } from "@/constants/registrationOptions";
 
 export default function WorkInfoForm(props: FormikProps<FormValues>) {
   const { setFieldValue } = props;
@@ -27,11 +28,11 @@ export default function WorkInfoForm(props: FormikProps<FormValues>) {
             <SelectValue placeholder="Select an industry" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="technology">Technology</SelectItem>
-            <SelectItem value="finance">Finance</SelectItem>
-            <SelectItem value="healthcare">Healthcare</SelectItem>
-            <SelectItem value="education">Education</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            {industries.map((industry, index) => (
+              <SelectItem key={index} value={industry.value}>
+                {industry.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <ErrorMessage name="industry" component="div" className="text-sm text-red-500" />

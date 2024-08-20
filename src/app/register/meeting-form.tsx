@@ -1,60 +1,101 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import { ErrorMessage, FieldArray, FormikProps } from "formik";
+import { FormikProps } from "formik";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormValues } from "./formschema";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
+type DayOfWeek = (typeof daysOfWeek)[number];
 const generateTimeSlots = () => {
   const slots = [];
   for (let hour = 0; hour < 24; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
-      slots.push(`${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`);
+      const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+      slots.push(time);
     }
   }
   return slots;
 };
 
 const timeSlots = generateTimeSlots();
+
+export interface MeetingPreference {
+  day: DayOfWeek;
+  startTime: string;
+  endTime: string;
+}
+
+interface MeetingPreferencesProps {
+  preferences: MeetingPreference[];
+  setPreferences: React.Dispatch<React.SetStateAction<MeetingPreference[]>>;
+}
 export default function MeetingPreferencesForm(props: FormikProps<FormValues>) {
   const { values, setFieldValue } = props;
+  const preferences = values.meetingPreferences;
+
+  const setPreferences = (newPreferences: MeetingPreference[]) => setFieldValue("meetingPreferences", newPreferences);
+  const handleDayChange = (day: DayOfWeek, isChecked: boolean) => {
+    if (isChecked) {
+      setPreferences([...preferences, { day, startTime: "09:00", endTime: "17:00" }]);
+    } else {
+      setPreferences(preferences.filter((pref) => pref.day !== day));
+    }
+  };
+
+  const handleTimeChange = (day: string, type: "startTime" | "endTime", value: string) => {
+    setPreferences(preferences.map((pref) => (pref.day === day ? { ...pref, [type]: value } : pref)));
+  };
+
   return (
-    <>
-      <FieldArray name="weeklyMeetingTimings">
-        {({ push, remove }) => (
-          <div className="space-y-4">
-            <Label>Weekly Available Time Slots</Label>
-            {daysOfWeek.map((day, dayIndex) => (
-              <div key={day} className="space-y-2">
-                <h3 className="text-lg font-medium">{day}</h3>
-                <div className="grid grid-cols-4 gap-2">
-                  {timeSlots.map((slot) => (
-                    <div key={`${day}-${slot}`} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`${day}-${slot}`}
-                        checked={values.weeklyMeetingTimings.includes(`${day}-${slot}`)}
-                        onCheckedChange={(checked) => {
-                          const timeSlot = `${day}-${slot}`;
-                          const updatedTimings = checked
-                            ? [...values.weeklyMeetingTimings, timeSlot]
-                            : values.weeklyMeetingTimings.filter((t) => t !== timeSlot);
-                          setFieldValue("weeklyMeetingTimings", updatedTimings);
-                        }}
-                      />
-                      <Label htmlFor={`${day}-${slot}`} className="text-sm">
-                        {slot}
-                      </Label>
-                    </div>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium">Meeting Preferences</h3>
+      {daysOfWeek.map((day) => (
+        <div key={day} className="flex items-center space-x-4">
+          <Checkbox
+            id={day}
+            checked={preferences.some((pref) => pref.day === day)}
+            onCheckedChange={(checked) => handleDayChange(day, checked as boolean)}
+          />
+          <Label htmlFor={day}>{day}</Label>
+          {preferences.some((pref) => pref.day === day) && (
+            <>
+              <Select
+                value={preferences.find((pref) => pref.day === day)?.startTime}
+                onValueChange={(value) => handleTimeChange(day, "startTime", value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Start Time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeSlots.map((time) => (
+                    <SelectItem key={time} value={time}>
+                      {time}
+                    </SelectItem>
                   ))}
-                </div>
-              </div>
-            ))}
-            <ErrorMessage name="weeklyMeetingTimings" component="div" className="text-sm text-red-500" />
-          </div>
-        )}
-      </FieldArray>
-    </>
+                </SelectContent>
+              </Select>
+              <span>to</span>
+              <Select
+                value={preferences.find((pref) => pref.day === day)?.endTime}
+                onValueChange={(value) => handleTimeChange(day, "endTime", value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="End Time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeSlots.map((time) => (
+                    <SelectItem key={time} value={time}>
+                      {time}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
